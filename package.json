@@ -6,7 +6,8 @@
   "scripts": {
     "test": "npm run eslint",
     "eslint": "eslint --ext .js src/",
-    "start": "node ./src/service/service.js"
+    "start": "node ./src/service/service.js",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -16,11 +17,6 @@
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/mercury99/1225915-typoteka-3/issues"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
   },
   "homepage": "https://github.com/mercury99/1225915-typoteka-3#readme",
   "devDependencies": {
