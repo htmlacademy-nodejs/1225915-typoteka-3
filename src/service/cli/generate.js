@@ -50,12 +50,14 @@ const TEXT_PARTS = [
 const CATEGORIES = ['Деревья', 'За жизнь', 'Без рамки', 'Разное', 'IT', 'Музыка', 'Кино', 'Программирование', 'Железо'];
 
 const getAvailableDates = () => {
-  const now = new Date();
-  now.setMonth(now.getMonth() - 3);
+  const lastDate = Date.now();
+  const firstDate = new Date(lastDate);
+
+  firstDate.setMonth(firstDate.getMonth() - 3);
 
   return {
-    now,
-    threeMonthsBefore: now.getTime(),
+    lastDate,
+    firstDate: firstDate.getTime(),
   };
 };
 
@@ -74,14 +76,14 @@ const generatePublications = (count) =>
     .fill({})
     .map(() => {
       const announceLength = getRandomInt(ANNOUNCE_MIN_LENGTH, ANNOUNCE_MAX_LENGTH);
-      const { now, threeMonthsBefore } = getAvailableDates();
+      const { lastDate, firstDate } = getAvailableDates();
 
       return {
         title: TITLES[getRandomInt(0, TITLES.length - 1)],
-        category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
+        category: shuffle(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1)),
         announce: shuffle(TEXT_PARTS).slice(0, announceLength).join(` `),
         fullText: shuffle(TEXT_PARTS).slice(0, getRandomInt(announceLength, TEXT_PARTS.length)).join(` `),
-        createdDate: formatDate(getRandomInt(threeMonthsBefore, now)),
+        createdDate: formatDate(getRandomInt(firstDate, lastDate)),
       };
     });
 
