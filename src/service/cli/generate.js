@@ -61,16 +61,6 @@ const getAvailableDates = () => {
   };
 };
 
-const formatDate = (date) => {
-  const dateObj = new Date(date);
-
-  return (
-    [dateObj.getFullYear(), dateObj.getMonth() + 1, dateObj.getDate()].join('-') +
-    ' ' +
-    [dateObj.getHours(), dateObj.getMinutes(), dateObj.getSeconds()].join(':')
-  );
-};
-
 const generatePublications = (count) =>
   Array(count)
     .fill({})
@@ -83,7 +73,7 @@ const generatePublications = (count) =>
         category: shuffle(CATEGORIES).slice(0, getRandomInt(1, CATEGORIES.length - 1)),
         announce: shuffle(TEXT_PARTS).slice(0, announceLength).join(` `),
         fullText: shuffle(TEXT_PARTS).slice(0, getRandomInt(announceLength, TEXT_PARTS.length)).join(` `),
-        createdDate: formatDate(getRandomInt(firstDate, lastDate)),
+        createdDate: new Date(getRandomInt(firstDate, lastDate)).toISOString(),
       };
     });
 
