@@ -1,5 +1,6 @@
 'use strict';
 
+const chalk = require(`chalk`);
 const version = require('./version');
 const generate = require('./generate');
 
@@ -17,6 +18,6 @@ module.exports = {
          ${generate.name} <count> формирует файл mocks.json
     `;
 
-    console.info(text);
+    console.info(chalk.gray(text));
   },
 };
