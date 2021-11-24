@@ -10,3 +10,11 @@ module.exports.ExitCode = {
 };
 
 module.exports.MOCK_FILE_NAME = `mock.json`;
+
+module.exports.HttpCode = {
+  OK: 200,
+  NOT_FOUND: 404,
+  INTERNAL_SERVER_ERROR: 500,
+  FORBIDDEN: 403,
+  UNAUTHORIZED: 401,
+};
