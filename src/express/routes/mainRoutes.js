@@ -7,23 +7,23 @@ const BASE_MAIN_PATH = '/';
 const mainRouter = new Router();
 
 mainRouter.get('/', (req, res) => {
-  res.send('mian');
+  res.render('main');
 });
 
 mainRouter.get('/register', (req, res) => {
-  res.send('/register');
+  res.render('sign-up');
 });
 
 mainRouter.get('/login', (req, res) => {
-  res.send('/login');
+  res.render('login');
 });
 
 mainRouter.get('/search', (req, res) => {
-  res.send('/search');
+  res.render('search');
 });
 
 mainRouter.get('/categories', (req, res) => {
-  res.send('/categories');
+  res.render('all-categories');
 });
 
 module.exports = { mainRouter, BASE_MAIN_PATH };
