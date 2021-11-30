@@ -7,11 +7,11 @@ const myRouter = new Router();
 const BASE_MY_PATH = '/my';
 
 myRouter.get('/', (req, res) => {
-  res.send('/my');
+  res.render('my');
 });
 
 myRouter.get('/comments', (req, res) => {
-  res.send('/my/comments');
+  res.render('comments');
 });
 
 module.exports = { myRouter, BASE_MY_PATH };
