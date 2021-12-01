@@ -41,7 +41,6 @@ module.exports = {
     app.use('/posts', getPostsRouter());
     app.use((req, res) => res.status(HttpCode.NOT_FOUND).send('Not found'));
     app.use((err, req, res, next) => {
-      console.log('err', err);
       res.status(HttpCode.INTERNAL_SERVER_ERROR).send('Internal server error: 500');
     });
 
