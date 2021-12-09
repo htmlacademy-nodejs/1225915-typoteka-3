@@ -11,6 +11,7 @@ Thumbs.db
 *.log*
 node_modules/
 mock.json
+test.http
 
 # Директория с собранными файлами проекта
 build/
