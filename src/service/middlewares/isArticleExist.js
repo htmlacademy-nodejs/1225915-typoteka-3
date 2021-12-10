@@ -1,6 +1,6 @@
 'use strict';
 
-const { handleNotFound } = require('../lib/handleNotFound');
+const { handleNotFound } = require(`../lib/handleNotFound`);
 
 const isArticleExist = (service) => (req, res, next) => {
   const { articleId } = req.params;

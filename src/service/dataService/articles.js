@@ -1,7 +1,7 @@
 'use strict';
 
-const { generateId } = require('../cli/generate/generateId');
-const { generateDate } = require('../cli/generate/generateDate');
+const { generateId } = require(`../cli/generate/generateId`);
+const { generateDate } = require(`../cli/generate/generateDate`);
 
 const requiredArticleFields = [`title`, `category`, `announce`];
 

@@ -1,15 +1,18 @@
 'use strict';
 
-const { Router } = require('express');
-const { ArticlesService, CategoriesService, SearchService } = require('../dataService');
-const { articlesRouter } = require('./articles');
-const { categoriesRouter } = require('./categories');
-const { searchRouter } = require('./search');
-const { getMockData } = require('../lib/getMockData');
+const { Router } = require(`express`);
+const { ArticlesService, CategoriesService, SearchService } = require(`../dataService`);
+const { articlesRouter } = require(`./articles`);
+const { categoriesRouter } = require(`./categories`);
+const { searchRouter } = require(`./search`);
+const { getMockData } = require(`../lib/getMockData`);
+const { getLogger } = require(`../lib/logger`);
 
-const API_ROUTER_PREFIX = '/api';
+const API_ROUTER_PREFIX = `/api`;
 
 const apiRouter = new Router();
+
+const logger = getLogger({ name: `api` });
 
 (async () => {
   try {
@@ -19,7 +22,7 @@ const apiRouter = new Router();
     categoriesRouter(apiRouter, new CategoriesService(mockData));
     searchRouter(apiRouter, new SearchService(mockData));
   } catch (err) {
-    console.log('api/index error', err);
+    logger.error(`/api/index error: ${err.message}`);
   }
 })();
 

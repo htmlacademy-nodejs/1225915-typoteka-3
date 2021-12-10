@@ -1,4 +1,6 @@
-const { shuffle, getRandomInt } = require('../../../utils');
+'use strict';
+
+const { shuffle, getRandomInt } = require(`../../../utils`);
 
 const ANNOUNCE_MIN_LENGTH = 1;
 const ANNOUNCE_MAX_LENGTH = 5;
