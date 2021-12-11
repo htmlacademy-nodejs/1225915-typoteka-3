@@ -1,7 +1,7 @@
 'use strict';
 
-const { HttpCode } = require('../../constants');
-const { requiredArticleFields } = require('../dataService/articles');
+const { HttpCode } = require(`../../constants`);
+const { requiredArticleFields } = require(`../dataService/articles`);
 
 const validateArticleFields = (req, res, next) => {
   const newArticlesData = req.body;
@@ -10,7 +10,7 @@ const validateArticleFields = (req, res, next) => {
   const isValidFields = newFields.every((fieldName) => requiredArticleFields.includes(fieldName));
 
   if (!isValidFields) {
-    res.status(HttpCode.BAD_REQUEST).send('Incorrect set of fields.');
+    res.status(HttpCode.BAD_REQUEST).send(`Incorrect set of fields.`);
   }
 
   next();

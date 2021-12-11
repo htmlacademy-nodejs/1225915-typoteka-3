@@ -1,14 +1,14 @@
 'use strict';
 
-const { Router } = require('express');
-const { HttpCode } = require('../../constants');
+const { Router } = require(`express`);
+const { HttpCode } = require(`../../constants`);
 
 const categoriesRouter = (apiRouter, service) => {
   const route = new Router();
 
-  apiRouter.use('/categories', route);
+  apiRouter.use(`/categories`, route);
 
-  route.get('/', (req, res) => {
+  route.get(`/`, (req, res) => {
     res.status(HttpCode.OK).json(service.getAllCategories());
   });
 };

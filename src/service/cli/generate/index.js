@@ -1,16 +1,16 @@
 'use strict';
 
-const fs = require('fs').promises;
+const fs = require(`fs`).promises;
 const chalk = require(`chalk`);
-const { ExitCode, MOCK_FILE_NAME } = require('../../../constants');
-const { readContent } = require('./readContent');
-const { generateId } = require('./generateId');
-const { generateCommentsList } = require('./generateCommentsList');
-const { generateTitle } = require('./generateTitle');
-const { generateCategories } = require('./generateCategories');
-const { generateAnnounce, getAnnounceLength } = require('./generateAnnounce');
-const { generateFullText } = require('./generateFullText');
-const { generateDate } = require('./generateDate');
+const { ExitCode, MOCK_FILE_NAME } = require(`../../../constants`);
+const { readContent } = require(`./readContent`);
+const { generateId } = require(`./generateId`);
+const { generateCommentsList } = require(`./generateCommentsList`);
+const { generateTitle } = require(`./generateTitle`);
+const { generateCategories } = require(`./generateCategories`);
+const { generateAnnounce, getAnnounceLength } = require(`./generateAnnounce`);
+const { generateFullText } = require(`./generateFullText`);
+const { generateDate } = require(`./generateDate`);
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
@@ -38,7 +38,7 @@ const generatePublications = ({ count, titles, categories, sentences, comments }
     });
 
 module.exports = {
-  name: '--generate',
+  name: `--generate`,
   run: async (args) => {
     const [sentences, titles, categories, comments] = await Promise.all([
       readContent(FILE_SENTENCES_PATH),

@@ -1,4 +1,6 @@
-const { getRandomInt } = require('../../../utils');
+'use strict';
+
+const { getRandomInt } = require(`../../../utils`);
 
 const getAvailableDates = () => {
   const lastDate = Date.now();
