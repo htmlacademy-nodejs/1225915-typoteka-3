@@ -15,3 +15,6 @@ test.http
 
 # Директория с собранными файлами проекта
 build/
+
+# Directory with uploaded images
+src/express/upload/img/*.*

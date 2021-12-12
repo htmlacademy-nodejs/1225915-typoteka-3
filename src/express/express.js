@@ -8,14 +8,13 @@ const { mainRouter, BASE_MAIN_PATH } = require(`./routes/mainRoutes`);
 const { myRouter, BASE_MY_PATH } = require(`./routes/myRoutes`);
 const { articlesRouter, BASE_ARTICLES_PATH } = require(`./routes/articlesRoutes`);
 const { HttpCode } = require(`../constants`);
-
-const DEFAULT_PORT = 8080;
-const PUBLIC_DIR = `public`;
-const TEMPLATES_PATH = path.join(`templates`, `pages`);
+const { PUBLIC_DIR, UPLOAD_DIR, DEFAULT_PORT, TEMPLATES_PATH } = require('./constants');
 
 const app = express();
+const PORT = process.env.FRONTEND_PORT || DEFAULT_PORT;
 
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
+app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 app.set(`views`, path.resolve(__dirname, TEMPLATES_PATH));
 app.set(`view engine`, `pug`);
 
@@ -31,6 +30,6 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(DEFAULT_PORT, () => {
-  console.info(chalk.green(`Front server is listening on ${DEFAULT_PORT} port.`));
+app.listen(PORT, () => {
+  console.info(chalk.green(`Front server is listening on ${PORT} port.`));
 });
