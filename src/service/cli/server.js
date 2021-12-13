@@ -2,19 +2,17 @@
 
 const express = require(`express`);
 
-const { HttpCode } = require(`../../constants`);
+const { HttpCode, DEFAULT_API_PORT } = require(`../../constants`);
 const { apiRouter, API_ROUTER_PREFIX } = require(`../api`);
 const { getLogger } = require(`../lib/logger`);
 const { requestLogger } = require(`../middlewares/requestLogger`);
-
-const DEFAULT_PORT = 3009;
 
 const logger = getLogger({ name: `api` });
 
 module.exports = {
   name: `--server`,
   run: (args) => {
-    const port = Number.parseInt(args[0], 10) || DEFAULT_PORT;
+    const port = Number.parseInt(args[0], 10) || DEFAULT_API_PORT;
 
     const app = express();
 
