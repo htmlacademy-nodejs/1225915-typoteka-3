@@ -33,7 +33,8 @@ CREATE TABLE articles (
   title VARCHAR (100) NOT NULL,
   announce VARCHAR (100) NOT NULL,
   full_text TEXT NOT NULL,
-  created TIMESTAMP NOT NULL,
+  created TIMESTAMP DEFAULT current_timestamp,
+  author_id INTEGER NOT NULL,
   image VARCHAR(150)
 );
 
@@ -42,7 +43,7 @@ CREATE TABLE comments (
   text VARCHAR (500) NOT NULL,
   article_id INTEGER NOT NULL,
   author_id INTEGER NOT NULL,
-  created TIMESTAMP NOT NULL,
+  created TIMESTAMP DEFAULT current_timestamp,
   FOREIGN KEY (article_id) REFERENCES articles (id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
@@ -59,18 +60,6 @@ CREATE TABLE articles_categories (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   FOREIGN KEY (category_id) REFERENCES categories (id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
-
-CREATE TABLE articles_comments (
-  article_id INTEGER NOT NULL,
-  comment_id INTEGER NOT NULL,
-  CONSTRAINT articles_comments_pk PRIMARY KEY (article_id, comment_id),
-  FOREIGN KEY (article_id) REFERENCES articles (id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  FOREIGN KEY (comment_id) REFERENCES comments (id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
