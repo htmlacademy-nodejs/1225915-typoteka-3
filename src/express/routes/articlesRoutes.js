@@ -38,6 +38,9 @@ articlesRouter.get(`/add`, renderNewPost);
 articlesRouter.post(`/add`, upload.single(`picture`), async (req, res) => {
   try {
     const { body, file } = req;
+
+    console.log('body', body);
+
     await api.createArticle(formatNewArticle({ body, file }));
     res.redirect(`/my`);
   } catch (err) {
@@ -54,6 +57,7 @@ articlesRouter.get(`/:id`, async (req, res) => {
 
   try {
     const article = await api.getArticleById(id);
+
     res.render(`post`, { article });
   } catch (err) {
     res.render(`404`);

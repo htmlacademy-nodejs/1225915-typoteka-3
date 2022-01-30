@@ -1,32 +1,36 @@
 'use strict';
 
 const { Router } = require(`express`);
-const { ArticlesService, CategoriesService, SearchService } = require(`../dataService`);
+const { sequelize } = require('../lib/sequelize');
+
+const { ArticlesService, CategoriesService, SearchService, CommentsService } = require(`../dataService`);
 const { articlesRouter } = require(`./articles`);
 const { categoriesRouter } = require(`./categories`);
 const { searchRouter } = require(`./search`);
-const { getMockData } = require(`../lib/getMockData`);
 const { getLogger } = require(`../lib/logger`);
+const { defineModels } = require('../models');
 
 const API_ROUTER_PREFIX = `/api`;
 
-const apiRouter = new Router();
-
 const logger = getLogger({ name: `api` });
 
-(async () => {
-  try {
-    const mockData = await getMockData();
+defineModels(sequelize);
 
-    articlesRouter(apiRouter, new ArticlesService(mockData));
-    categoriesRouter(apiRouter, new CategoriesService(mockData));
-    searchRouter(apiRouter, new SearchService(mockData));
+const getApiRouter = async () => {
+  const apiRouter = new Router();
+
+  try {
+    articlesRouter(apiRouter, new ArticlesService(sequelize), new CommentsService(sequelize));
+    categoriesRouter(apiRouter, new CategoriesService(sequelize));
+    searchRouter(apiRouter, new SearchService(sequelize));
   } catch (err) {
     logger.error(`/api/index error: ${err.message}`);
   }
-})();
+
+  return apiRouter;
+};
 
 module.exports = {
-  apiRouter,
+  getApiRouter,
   API_ROUTER_PREFIX,
 };

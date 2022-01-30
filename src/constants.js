@@ -1,19 +1,17 @@
 'use strict';
 
-module.exports.DEFAULT_COMMAND = `--help`;
+const DEFAULT_COMMAND = `--help`;
 
-module.exports.USER_ARGV_INDEX = 2;
+const USER_ARGV_INDEX = 2;
 
-module.exports.DEFAULT_API_PORT = 3009;
+const DEFAULT_API_PORT = 3009;
 
-module.exports.ExitCode = {
+const EXIT_CODE = {
   error: 1,
   success: 0,
 };
 
-module.exports.MOCK_FILE_NAME = `mock.json`;
-
-module.exports.HttpCode = {
+const HTTP_CODE = {
   OK: 200,
   CREATED: 201,
   BAD_REQUEST: 400,
@@ -23,7 +21,16 @@ module.exports.HttpCode = {
   INTERNAL_SERVER_ERROR: 500,
 };
 
-module.exports.Env = {
+const ENV = {
   DEVELOPMENT: `development`,
   PRODUCTION: `production`,
+};
+
+module.exports = {
+  ENV,
+  HTTP_CODE,
+  EXIT_CODE,
+  DEFAULT_API_PORT,
+  USER_ARGV_INDEX,
+  DEFAULT_COMMAND,
 };

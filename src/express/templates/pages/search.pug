@@ -12,11 +12,11 @@ block main
         .search.search-page__form
           form(action='/search', method='get')
             label
-              input(type='text', name='query' placeholder='Что ищем?' value=`${query}`)
+              input(type='text', name='query' placeholder='Что ищем?' value=`${query || ''}`)
             button.search__button.button.button--transparent(type='submit') Найти
           each article in articles
             .search__result
-              time.search__date(datetime=article.createdDate) #{article.createdDate}
+              time.search__date(datetime=article.created_at) #{article.created_at}
               a.search__link(href=`/articles/${article.id}`) !{article.title}
           if emptyFlag
             p.search-page__empty

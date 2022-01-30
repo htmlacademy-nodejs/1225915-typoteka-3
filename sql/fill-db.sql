@@ -17,7 +17,7 @@ INSERT INTO roles(title) VALUES
 ('reader');
 
 ALTER TABLE users DISABLE TRIGGER ALL;
-INSERT INTO users(email, firstname, lastname, avatar, role) VALUES
+INSERT INTO users(email, firstname, lastname, avatar, role_id) VALUES
 ('ivanov@example.com', 'Иван', 'Иванов', 'avatar1.jpg', 1),
 ('petrov@example.com', 'Пётр', 'Петров', 'avatar2.jpg', 2);
 ALTER TABLE users ENABLE TRIGGER ALL;

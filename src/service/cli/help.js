@@ -2,7 +2,7 @@
 
 const chalk = require(`chalk`);
 const version = require(`./version`);
-const generate = require(`./generate`);
+const fillDb = require(`./fillDb`);
 
 module.exports = {
   name: `--help`,
@@ -15,7 +15,7 @@ module.exports = {
         Команды:
          ${version.name}: выводит номер версии
          ${this.name}: печатает этот текст
-         ${generate.name} <count> формирует файл mocks.json
+         ${fillDb.name} <count> формирует и заполняет базу данных
     `;
 
     console.info(chalk.gray(text));

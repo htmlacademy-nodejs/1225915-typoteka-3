@@ -1,12 +1,24 @@
 'use strict';
 
+const { Op } = require(`sequelize`);
+const { DEFAULT_ORDER } = require('./constants');
+
 class SearchService {
-  constructor(articles) {
-    this._articles = articles;
+  constructor(sequelize) {
+    this._Article = sequelize.models.article;
   }
 
-  searchByTitle(subStr) {
-    return this._articles.filter(({ title }) => title.includes(subStr));
+  async searchByTitle(subStr) {
+    const articles = await this._Article.findAll({
+      where: {
+        title: {
+          [Op.substring]: subStr,
+        },
+      },
+      order: [DEFAULT_ORDER],
+    });
+
+    return articles.map((article) => article.get());
   }
 }
 

@@ -20,20 +20,28 @@ class API {
     return response.data;
   }
 
-  getArticles() {
-    return this._load('/articles');
+  getArticles(params = {}) {
+    const { comments } = params;
+
+    return this._load('/articles', { params: { comments } });
   }
 
   getArticleById(id) {
     return this._load(`/articles/${id}`);
   }
 
+  getAllComments() {
+    return this._load(`/articles/comments`);
+  }
+
   search(query) {
     return this._load('/search', { params: { query } });
   }
 
-  getCategories() {
-    return this._load('/categories');
+  getCategories(params = {}) {
+    const { withCount } = params;
+
+    return this._load('/categories', { params: { withCount } });
   }
 
   createArticle(data) {

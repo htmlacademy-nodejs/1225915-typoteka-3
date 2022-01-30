@@ -1,22 +1,21 @@
 'use strict';
 
 const { shuffle, getRandomInt } = require(`../../../utils`);
-const { generateId } = require(`./generateId`);
 
 const COMMENTS_LIST_MAX_LENGTH = 5;
 const COMMENT_MAX_LENGTH = 3;
 
-const generateComment = (comments) => () => {
+const generateComment = (comments, users) => () => {
   return {
-    id: generateId(),
     text: shuffle(comments).slice(1, COMMENT_MAX_LENGTH).join(` `),
+    author_id: getRandomInt(1, users.length),
   };
 };
 
-const generateCommentsList = (comments) => {
+const generateCommentsList = (comments, users) => {
   const targetListLength = getRandomInt(0, COMMENTS_LIST_MAX_LENGTH);
 
-  return Array(targetListLength).fill({}).map(generateComment(comments));
+  return Array(targetListLength).fill({}).map(generateComment(comments, users));
 };
 
 module.exports = {

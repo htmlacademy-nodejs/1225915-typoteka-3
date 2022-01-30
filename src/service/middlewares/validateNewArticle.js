@@ -1,6 +1,6 @@
 'use strict';
 
-const { HttpCode } = require(`../../constants`);
+const { HTTP_CODE } = require(`../../constants`);
 const { requiredArticleFields } = require(`../dataService/articles`);
 
 const validateNewArticle = (req, res, next) => {
@@ -10,7 +10,8 @@ const validateNewArticle = (req, res, next) => {
   const fieldsExists = requiredArticleFields.every((fieldName) => newArticleFields.includes(fieldName));
 
   if (!fieldsExists) {
-    res.status(HttpCode.BAD_REQUEST).send(`Not all fields were passed.`);
+    res.status(HTTP_CODE.BAD_REQUEST).send(`Not all fields were passed.`);
+    return;
   }
 
   next();

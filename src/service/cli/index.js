@@ -2,13 +2,13 @@
 
 const help = require(`./help`);
 const version = require(`./version`);
-const generate = require(`./generate`);
+const fillDb = require(`./fillDb`);
 const server = require(`./server`);
 
 const Cli = {
   [help.name]: help,
   [version.name]: version,
-  [generate.name]: generate,
+  [fillDb.name]: fillDb,
   [server.name]: server,
 };
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const { HttpCode } = require(`../../constants`);
+const { HTTP_CODE } = require(`../../constants`);
 
 const requiredCommentFields = [`text`];
 
@@ -9,7 +9,7 @@ const validateNewComment = (req, res, next) => {
   const isAllRequiredPropertiesExist = requiredCommentFields.every((propertyName) => newComment[propertyName]);
 
   if (!isAllRequiredPropertiesExist) {
-    res.status(HttpCode.BAD_REQUEST).send(`Invalid comment properties.`);
+    res.status(HTTP_CODE.BAD_REQUEST).send(`Invalid comment properties.`);
   }
 
   next();
