@@ -2,7 +2,6 @@
 
 const { Router } = require(`express`);
 const { getAPI } = require('../api');
-const { getCommentsFromArticles } = require('../lib/getCommentsFromArticles');
 
 const myRouter = new Router();
 
@@ -15,9 +14,7 @@ myRouter.get(`/`, async (req, res) => {
 });
 
 myRouter.get(`/comments`, async (req, res) => {
-  const articles = await api.getArticles();
-
-  const comments = getCommentsFromArticles(articles);
+  const comments = await api.getAllComments();
 
   res.render(`comments`, { comments });
 });

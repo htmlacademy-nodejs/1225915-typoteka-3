@@ -1,88 +1,56 @@
 'use strict';
 
-const { generateId } = require(`../cli/generate/generateId`);
-const { generateDate } = require(`../cli/generate/generateDate`);
-
+const { where } = require('sequelize');
+const { DEFAULT_ORDER } = require('./constants');
 const requiredArticleFields = [`title`, `category`, `announce`];
 
 class ArticlesService {
-  constructor(articles) {
-    this._articles = articles;
+  constructor(sequelize) {
+    this._Article = sequelize.models.article;
+    this._Category = sequelize.models.category;
+    this._Comment = sequelize.models.comment;
   }
 
-  getAll() {
-    return this._articles;
-  }
+  async getAll(needComments) {
+    const include = [this._Category];
 
-  getArticleById(id) {
-    return this._articles.find((article) => {
-      return article.id === id;
-    });
-  }
-
-  dropArticle(article) {
-    const { id } = article;
-
-    this._articles = this._articles.filter((article) => article.id !== id);
-
-    return article;
-  }
-
-  getComments(article) {
-    return article.comments;
-  }
-
-  dropArticleCommentById(articleId, commentId, article) {
-    const comments = this.getComments(article);
-    const comment = comments.find((comment) => comment.id === commentId);
-
-    if (!comment) {
-      return null;
+    if (needComments) {
+      include.push(this._Comment);
     }
 
-    const filteredComments = comments.filter((comment) => comment.id !== commentId);
+    const articles = await this._Article.findAll({ include, order: [DEFAULT_ORDER] });
 
-    this._articles = this._articles.map((article) => {
-      if (article.id === articleId) {
-        return { ...article, comments: filteredComments };
-      }
+    return articles.map((article) => article.get());
+  }
 
-      return article;
+  getArticleById(articleId) {
+    return this._Article.findByPk(articleId, {
+      include: [this._Category, this._Comment],
+    });
+  }
+
+  async createArticle(data) {
+    const newArticle = await this._Article.create(data);
+    newArticle.addCategories(data.category);
+    newArticle.setAuthor(1);
+
+    return newArticle.get();
+  }
+
+  async updateArticle(articleId, data) {
+    const [affectedRows] = await this._Article.update(data, {
+      where: {
+        id: Number(articleId),
+      },
     });
 
-    return comment;
+    return !!affectedRows;
   }
 
-  createArticle(data) {
-    const newArticle = { ...data, id: generateId(), createdDate: generateDate(), comments: [] };
+  async dropArticle(articleId) {
+    const deletedRaws = this._Article.destroy({ where: { id: Number(articleId) } });
 
-    this._articles.push(newArticle);
-
-    return newArticle;
-  }
-
-  updateArticle(article, data) {
-    const { id } = article;
-    const updatedArticle = { ...article, ...data };
-
-    this._articles = this._articles.map((article) => {
-      if (article.id === id) {
-        return updatedArticle;
-      }
-
-      return article;
-    });
-
-    return updatedArticle;
-  }
-
-  addComment(article, newCommentData) {
-    const comments = this.getComments(article);
-    const newComment = { ...newCommentData, id: generateId() };
-
-    comments.push(newComment);
-
-    return comments;
+    return !!deletedRaws;
   }
 }
 

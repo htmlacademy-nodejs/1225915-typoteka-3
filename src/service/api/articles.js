@@ -1,80 +1,88 @@
 'use strict';
 
 const { Router } = require(`express`);
-const { HttpCode } = require(`../../constants`);
+const { HTTP_CODE } = require(`../../constants`);
 const { handleNotFound } = require(`../lib/handleNotFound`);
 const { validateNewArticle } = require(`../middlewares/validateNewArticle`);
 const { isArticleExist } = require(`../middlewares/isArticleExist`);
 const { validateArticleFields } = require(`../middlewares/validateArticleFields`);
 const { validateNewComment } = require(`../middlewares/validateNewComment`);
 
-const articlesRouter = (apiRouter, service) => {
+const articlesRouter = (apiRouter, articlesService, commentsService) => {
   const route = new Router();
   apiRouter.use(`/articles`, route);
 
-  route.get(`/`, (req, res) => {
-    res.status(HttpCode.OK).json(service.getAll());
+  route.get(`/`, async (req, res) => {
+    const { comments } = req.query;
+
+    const articles = await articlesService.getAll(comments);
+
+    res.status(HTTP_CODE.OK).json(articles);
   });
 
-  route.get(`/:articleId`, isArticleExist(service), (req, res) => {
-    const { article } = res.locals;
+  route.get('/comments', async (req, res) => {
+    const { limit } = req.query;
 
-    res.status(HttpCode.OK).json(article);
+    const comments = await commentsService.getComments(limit);
+
+    res.status(HTTP_CODE.OK).json(comments);
   });
 
-  route.delete(`/:articleId`, isArticleExist(service), (req, res) => {
+  route.get(`/:articleId`, isArticleExist(articlesService), (req, res) => {
     const { article } = res.locals;
 
-    const droppedArticle = service.dropArticle(article);
-
-    res.status(HttpCode.OK).json(droppedArticle);
+    res.status(HTTP_CODE.OK).json(article);
   });
 
-  route.get(`/:articleId/comments`, isArticleExist(service), (req, res) => {
+  route.delete(`/:articleId`, isArticleExist(articlesService), (req, res) => {
     const { article } = res.locals;
 
-    const comments = service.getComments(article);
+    const droppedArticle = articlesService.dropArticle(article.id);
 
-    res.status(HttpCode.OK).json(comments);
+    res.status(HTTP_CODE.OK).json(droppedArticle);
   });
 
-  route.delete(`/:articleId/comments/:commentId`, isArticleExist(service), (req, res) => {
+  route.get(`/:articleId/comments`, isArticleExist(articlesService, true), (req, res) => {
     const { article } = res.locals;
-    const { articleId, commentId } = req.params;
 
-    const comment = service.dropArticleCommentById(articleId, commentId, article);
+    res.status(HTTP_CODE.OK).json(article.comments);
+  });
+
+  route.delete(`/:articleId/comments/:commentId`, isArticleExist(articlesService), async (req, res) => {
+    const { commentId } = req.params;
+
+    const comment = await commentsService.dropCommentById(commentId);
 
     if (!comment) {
       return handleNotFound(res, `Comment with id ${commentId} not found.`);
     }
 
-    res.status(HttpCode.OK).json(comment);
+    res.status(HTTP_CODE.OK).json(comment);
   });
 
-  route.post(`/`, validateNewArticle, (req, res) => {
+  route.post(`/`, validateNewArticle, async (req, res) => {
     const newArticle = req.body;
+    const createdArticle = await articlesService.createArticle(newArticle);
 
-    const createdArticle = service.createArticle(newArticle);
-
-    res.status(HttpCode.CREATED).json(createdArticle);
+    res.status(HTTP_CODE.CREATED).json(createdArticle);
   });
 
-  route.put(`/:articleId`, [isArticleExist(service), validateArticleFields], (req, res) => {
+  route.put(`/:articleId`, [isArticleExist(articlesService), validateArticleFields], async (req, res) => {
     const { article } = res.locals;
     const newArticleData = req.body;
 
-    const updatedArticle = service.updateArticle(article, newArticleData);
+    const updatedArticle = await articlesService.updateArticle(article.id, newArticleData);
 
-    res.status(HttpCode.OK).json(updatedArticle);
+    res.status(HTTP_CODE.OK).json(updatedArticle);
   });
 
-  route.post(`/:articleId/comments`, [isArticleExist(service), validateNewComment], (req, res) => {
-    const { article } = res.locals;
+  route.post(`/:articleId/comments`, [isArticleExist(articlesService), validateNewComment], async (req, res) => {
+    const { articleId } = req.params;
     const newComment = req.body;
 
-    const updatedComments = service.addComment(article, newComment);
+    const createdComment = await commentsService.addComment(articleId, newComment);
 
-    res.status(HttpCode.CREATED).json(updatedComments);
+    res.status(HTTP_CODE.CREATED).json(createdComment);
   });
 };
 

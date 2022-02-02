@@ -2,18 +2,20 @@
 
 const { handleNotFound } = require(`../lib/handleNotFound`);
 
-const isArticleExist = (service) => (req, res, next) => {
-  const { articleId } = req.params;
+const isArticleExist =
+  (service, needComments = false) =>
+  async (req, res, next) => {
+    const { articleId } = req.params;
 
-  const article = service.getArticleById(articleId);
+    const article = await service.getArticleById(articleId, needComments);
 
-  if (!article) {
-    handleNotFound(res, `Article with id ${articleId} not found.`);
-  }
+    if (!article) {
+      handleNotFound(res, `Article with id ${articleId} not found.`);
+    }
 
-  res.locals.article = article;
-  next();
-};
+    res.locals.article = article;
+    next();
+  };
 
 module.exports = {
   isArticleExist,

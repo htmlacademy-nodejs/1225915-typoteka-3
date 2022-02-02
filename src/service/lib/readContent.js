@@ -1,5 +1,5 @@
 const fs = require(`fs`).promises;
-const { getLogger } = require(`../../lib/logger`);
+const { getLogger } = require(`./logger`);
 
 const logger = getLogger({ name: `api` });
 

@@ -8,10 +8,14 @@ const mainRouter = new Router();
 const api = getAPI();
 
 mainRouter.get(`/`, async (req, res) => {
-  const articles = await api.getArticles();
+  const [articles, categories] = await Promise.all([
+    api.getArticles({ comments: true }),
+    api.getCategories({ withCount: true }),
+  ]);
 
   console.log('articles', articles);
-  res.render(`main`, { articles });
+
+  res.render(`main`, { articles, categories });
 });
 
 mainRouter.get(`/register`, (req, res) => {

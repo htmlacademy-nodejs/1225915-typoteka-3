@@ -2,14 +2,13 @@ const formatNewArticle = ({ body, file = {} }) => {
   const data = {
     title: body.title,
     announce: body.announce,
-    fullText: body.text,
-    createdDate: body.date || new Date().toISOString(),
-    category: body.categories || [],
+    full_text: body.text,
+    category: (body.categories || []).map((category) => Number(category)),
     comments: [],
   };
 
   if (file.filename) {
-    data.picture = file.filename;
+    data.image = file.filename;
   }
 
   return data;

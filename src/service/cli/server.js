@@ -2,8 +2,8 @@
 
 const express = require(`express`);
 
-const { HttpCode, DEFAULT_API_PORT } = require(`../../constants`);
-const { apiRouter, API_ROUTER_PREFIX } = require(`../api`);
+const { HTTP_CODE, DEFAULT_API_PORT } = require(`../../constants`);
+const { getApiRouter, API_ROUTER_PREFIX } = require(`../api`);
 const { getLogger } = require(`../lib/logger`);
 const { requestLogger } = require(`../middlewares/requestLogger`);
 const { sequelize } = require(`../lib/sequelize`);
@@ -22,17 +22,19 @@ const run = async (args) => {
 
   const port = Number.parseInt(args[0], 10) || DEFAULT_API_PORT;
 
+  const apiRouter = await getApiRouter();
+
   const app = express();
 
   app.use(express.json());
   app.use(requestLogger(logger));
   app.use(API_ROUTER_PREFIX, apiRouter);
   app.use((req, res) => {
-    res.status(HttpCode.NOT_FOUND).send(`Not found`);
+    res.status(HTTP_CODE.NOT_FOUND).send(`Not found`);
     logger.error(`Route not found: ${req.url}`);
   });
   app.use((err, req, res, next) => {
-    res.status(HttpCode.INTERNAL_SERVER_ERROR).send(`Internal server error: 500`);
+    res.status(HTTP_CODE.INTERNAL_SERVER_ERROR).send(`Internal server error: 500`);
     logger.error(`An error occurred on processing request: ${err.message}`);
   });
 

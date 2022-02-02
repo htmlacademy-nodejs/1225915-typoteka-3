@@ -8,34 +8,11 @@ block main
     section.main-page__theme-list
       h2.visually-hidden Список тем
       ul.themes
-        li.themes__item
-          a.themes__item-link(href='#!')
-            | Автомобили
-            sup 88
-        li.themes__item
-          a.themes__item-link(href='#!')
-            | Удаленная работа
-            sup 13
-        li.themes__item
-          a.themes__item-link(href='#!')
-            | Бизнес
-            sup 13
-        li.themes__item
-          a.themes__item-link(href='#!')
-            | Путешествия
-            sup 13
-        li.themes__item
-          a.themes__item-link.themes__item-link--padding(href='#!')
-            | Дизайн и обустройство
-            sup 13
-        li.themes__item
-          a.themes__item-link(href='#!')
-            | Производство игрушек
-            sup 22
-        li.themes__item
-          a.themes__item-link(href='#!')
-            | UX & UI
-            sup 22
+        each category of categories
+          li.themes__item
+            a.themes__item-link(href=`/category/${category.id}`)
+              | #{category.title}
+              sup #{category.articles_in_category}
     .main-page__section-flex
       section.main-page__hot.hot
         h2.hot__name
@@ -92,18 +69,18 @@ block main
       h2.visually-hidden Список превью статей
       ul.preview__list
         each article of articles
-          li.preview__item(class=article.picture ? `` : `preview__item--noimage`)
+          li.preview__item(class=article.image ? `` : `preview__item--noimage`)
             ul.preview__breadcrumbs
-              each category of article.category
+              each category of article.categories
                 li.preview__breadcrumbs-item
-                  a.preview__breadcrumbs-link(href='#') #{category}
+                  a.preview__breadcrumbs-link(href='#') #{category.title}
             .preview__background
-              img.preview__background-image(src=`/img/${article.picture}` width='460' height='240' alt=article.title)
-            time.preview__time(datetime=`${article.createdDate}`) #{article.createdDate}
+              img.preview__background-image(src=`/img/${article.image}` width='460' height='240' alt=article.title)
+            time.preview__time(datetime=`${article.created_at}`) #{article.created_at}
             h3.preview__name
               a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
             p.preview__text #{article.announce}
-            a.preview__comment(href=`/articles/${article.id}/comments`)
+            a.preview__comment(href=`/articles/${article.id}`)
               | Комментарии
               span.preview__cloud
               b.preview__comment-count #{article.comments.length}

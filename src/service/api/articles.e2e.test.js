@@ -1,141 +1,135 @@
 const express = require(`express`);
 const request = require(`supertest`);
+const Sequelize = require(`sequelize`);
 
 const { articlesRouter } = require(`./articles`);
 const { ArticlesService } = require(`../dataService/articles`);
-const { HttpCode } = require(`../../constants`);
+const { HTTP_CODE } = require(`../../constants`);
+const { getUsers } = require('../cli/fillDb/getUsers');
+const { initDb } = require('../lib/initDb');
+const { CommentsService } = require('../dataService');
 
-const mockData = [
+const mockUsers = getUsers();
+
+const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
+
+const mockArticles = [
   {
-    id: `7uDv8x`,
-    comments: [{ id: `eJC--w`, text: `Хочу такую же футболку :-)` }],
+    comments: [],
     title: `Что такое золотое сечение`,
-    category: [`Работа`, `Уход за собой`],
-    announce: `Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Золотое сечение — соотношение двух величин, гармоническая пропорция. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Программировать не настолько сложно, как об этом говорят.`,
-    fullText: `Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Достичь успеха помогут ежедневные повторения. Из под его пера вышло 8 платиновых альбомов. Простые ежедневные упражнения помогут достичь успеха.`,
-    createdDate: `2021-11-29T11:17:03.491Z`,
+    category: [2, 3],
+    announce: `Освоить вёрстку сложно.`,
+    full_text: `Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Освоить вёрстку несложно.`,
   },
   {
-    id: `7i3VHZ`,
-    comments: [
-      { id: `oK88CG`, text: `Планируете записать видосик на эту тему? Плюсую, но слишком много буквы!` },
-      { id: `vjHhpE`, text: `Хочу такую же футболку :-) Согласен с автором!` },
-      {
-        id: `fKqVh5`,
-        text: `Мне не нравится ваш стиль. Ощущение что вы меня поучаете. Мне кажется или я уже читал это где-то?`,
-      },
-      {
-        id: `tnztmI`,
-        text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили. Планируете записать видосик на эту тему?`,
-      },
-    ],
+    comments: [{ text: 'text' }],
     title: `Лучшие рок-музыканты 20-века`,
-    category: [`Уход за собой`, `Семья`, `Музыка`],
-    announce: `Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Он написал больше 30 хитов.`,
-    fullText: `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Из под его пера вышло 8 платиновых альбомов. Золотое сечение — соотношение двух величин, гармоническая пропорция. Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Собрать камни бесконечности легко, если вы прирожденный герой. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Ёлки — это не просто красивое дерево. Это прочная древесина. Программировать не настолько сложно, как об этом говорят. Игры и программирование разные вещи. Не стоит идти в программисты, если вам нравятся только игры. Больше разнообразных строк в предложениях Это один из лучших рок-музыкантов.`,
-    createdDate: `2021-11-15T21:25:16.857Z`,
+    category: [1],
+    announce: `Освоить вёрстку несложно.`,
+    full_text: `Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать.`,
   },
 ];
 
-const createApi = () => {
+const mockDB = new Sequelize(`sqlite::memory:`, { logging: false });
+
+const createApi = async () => {
+  await initDb(mockDB, { categories: mockCategories, articles: mockArticles, users: mockUsers });
+
   const app = express();
   app.use(express.json());
-  const currentMockData = JSON.parse(JSON.stringify(mockData));
 
-  articlesRouter(app, new ArticlesService(currentMockData));
+  articlesRouter(app, new ArticlesService(mockDB), new CommentsService(mockDB));
 
   return app;
 };
 
 describe(`articlesRouter`, () => {
   describe(`GET /articles`, () => {
-    const app = createApi();
-
     let response;
 
     beforeAll(async () => {
+      const app = await createApi();
+
       response = await request(app).get(`/articles`);
     });
 
     test(`Returns status 200`, () => {
-      expect(response.statusCode).toBe(HttpCode.OK);
+      expect(response.statusCode).toBe(HTTP_CODE.OK);
     });
     test(`Contains 2 articles`, () => {
       expect(response.body.length).toBe(2);
     });
-    test(`First article has id "7uDv8x"`, () => {
-      expect(response.body[0].id).toBe(`7uDv8x`);
+    test(`First article has title "Что такое золотое сечение"`, () => {
+      expect(response.body[0].title).toBe(mockArticles[0].title);
     });
   });
 
   describe(`GET /articles/:articleId`, () => {
     describe(`Should return correct article by id`, () => {
-      const app = createApi();
-
       let response;
 
       beforeAll(async () => {
-        response = await request(app).get(`/articles/7i3VHZ`);
+        const app = await createApi();
+
+        response = await request(app).get(`/articles/2`);
       });
 
       test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.OK);
+        expect(response.statusCode).toBe(HTTP_CODE.OK);
       });
       test(`Article title is "Лучшие рок-музыканты 20-века"`, () => {
         expect(response.body.title).toBe(`Лучшие рок-музыканты 20-века`);
       });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).get(`/articles/randomId`).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).get(`/articles/randomId`).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 
   describe(`GET /articles/:articleId/comments`, () => {
     describe(`Should return list of comments for article`, () => {
-      const app = createApi();
-
       let response;
 
       beforeAll(async () => {
-        response = await request(app).get(`/articles/7uDv8x/comments`);
+        const app = await createApi();
+
+        response = await request(app).get(`/articles/2/comments`);
       });
 
       test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.OK);
+        expect(response.statusCode).toBe(HTTP_CODE.OK);
       });
       test(`Returns one comment`, () => {
         expect(response.body.length).toBe(1);
       });
       test(`Comment text is `, () => {
-        expect(response.body[0].text).toBe(`Хочу такую же футболку :-)`);
+        expect(response.body[0].text).toBe(`text`);
       });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).get(`/articles/randomId/comments`).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).get(`/articles/randomId/comments`).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 
   describe(`DELETE /articles/:articleId`, () => {
     describe(`Should delete article by id`, () => {
-      const app = createApi();
-
       let response;
+      let app;
 
       beforeAll(async () => {
-        response = await request(app).delete(`/articles/7uDv8x`);
+        app = await createApi();
+
+        response = await request(app).delete(`/articles/2`);
       });
 
       test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.OK);
-      });
-      test(`Returns correct article`, () => {
-        expect(response.body.id).toBe(`7uDv8x`);
+        expect(response.statusCode).toBe(HTTP_CODE.OK);
       });
 
       test(`Articles count is 1 now`, (done) => {
@@ -146,35 +140,40 @@ describe(`articlesRouter`, () => {
       });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).delete(`/articles/randomId`).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).delete(`/articles/randomId`).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 
   describe(`POST /articles`, () => {
     describe(`Should create new article with correct data`, () => {
-      const app = createApi();
-
+      let app;
       let response;
 
       const newArticle = {
         title: `title`,
-        category: [`category`],
+        category: [1],
         announce: `announce`,
-        fullText: `fullText`,
+        full_text: `fullText`,
       };
 
       beforeAll(async () => {
+        app = await createApi();
+
         response = await request(app).post(`/articles`).send(newArticle);
       });
 
-      test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.CREATED);
+      test(`Returns status code 201`, () => {
+        expect(response.statusCode).toBe(HTTP_CODE.CREATED);
       });
       test(`Returns created article`, () => {
-        expect(response.body).toEqual(expect.objectContaining(newArticle));
+        const { category, ...rest } = newArticle;
+
+        const createdArticleProperties = { ...rest };
+
+        expect(response.body).toEqual(expect.objectContaining(createdArticleProperties));
       });
       test(`Articles count is changed`, (done) => {
         request(app)
@@ -185,11 +184,15 @@ describe(`articlesRouter`, () => {
     });
 
     describe(`Refuses to create an article if data is invalid`, () => {
-      const app = createApi();
+      let app;
+
+      beforeAll(async () => {
+        app = await createApi();
+      });
 
       const newArticle = {
         title: `title`,
-        category: [`category`],
+        category: [1],
         announce: `announce`,
       };
 
@@ -198,7 +201,7 @@ describe(`articlesRouter`, () => {
           const badArticle = { ...newArticle };
           delete badArticle[key];
 
-          await request(app).post(`/articles`).send(badArticle).expect(HttpCode.BAD_REQUEST);
+          await request(app).post(`/articles`).send(badArticle).expect(HTTP_CODE.BAD_REQUEST);
         }
       });
     });
@@ -206,24 +209,25 @@ describe(`articlesRouter`, () => {
 
   describe(`PUT /:articleId`, () => {
     describe(`Changes an article`, () => {
-      const app = createApi();
-
+      let app;
       let response;
 
       const newFieldsContent = {
         title: `title`,
-        category: [`Работа`],
+        announce: 'announce',
       };
 
       beforeAll(async () => {
-        response = await request(app).put(`/articles/7uDv8x`).send(newFieldsContent);
+        app = await createApi();
+
+        response = await request(app).put(`/articles/1`).send(newFieldsContent);
       });
 
       test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.OK);
+        expect(response.statusCode).toBe(HTTP_CODE.OK);
       });
       test(`Returns changed article`, () => {
-        expect(response.body).toEqual(expect.objectContaining(newFieldsContent));
+        expect(response.body).toBeTruthy();
       });
       test(`Really change article`, (done) => {
         request(app)
@@ -235,86 +239,88 @@ describe(`articlesRouter`, () => {
       });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).put(`/articles/randomId`).send({}).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).put(`/articles/randomId`).send({}).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 
   describe(`DELETE /articles/:articleId/comments/:commentId`, () => {
     describe(`Should correctly delete a comment `, () => {
-      const app = createApi();
-
+      let app;
       let response;
 
       beforeAll(async () => {
-        response = await request(app).delete(`/articles/7uDv8x/comments/eJC--w`);
+        app = await createApi();
+
+        response = await request(app).delete(`/articles/2/comments/1`);
       });
 
       test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.OK);
+        expect(response.statusCode).toBe(HTTP_CODE.OK);
       });
       test(`Really delete comment`, (done) => {
         request(app)
-          .get(`/articles`)
-          .expect((res) => expect(res.body[0].comments).toEqual([]))
+          .get(`/articles?comments=true`)
+          .expect((res) => expect(res.body[1].comments).toEqual([]))
           .end(done);
       });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).delete(`/articles/randomId/comments/commentId`).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).delete(`/articles/randomId/comments/commentId`).expect(HTTP_CODE.NOT_FOUND);
     });
 
-    test(`Should return "not found error" if comment with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if comment with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).delete(`/articles/7uDv8x/comments/commentId`).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).delete(`/articles/1/comments/999`).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 
   describe(`POST /articles/:articleId/comments`, () => {
     describe(`Should add new comment`, () => {
-      const app = createApi();
-
+      let app;
       let response;
 
       const newComment = { text: `text` };
 
       beforeAll(async () => {
-        response = await request(app).post(`/articles/7uDv8x/comments`).send(newComment);
+        app = await createApi();
+
+        response = await request(app).post(`/articles/1/comments`).send(newComment);
       });
 
-      test(`Returns status code 200`, () => {
-        expect(response.statusCode).toBe(HttpCode.CREATED);
+      test(`Returns status code 201`, () => {
+        expect(response.statusCode).toBe(HTTP_CODE.CREATED);
       });
       test(`Really add new comment`, (done) => {
         request(app)
-          .get(`/articles/7uDv8x`)
-          .expect((res) => expect(res.body.comments[1]).toEqual(expect.objectContaining(newComment)))
+          .get(`/articles/1/comments`)
+          .expect((res) => expect(res.body[0]).toEqual(expect.objectContaining(newComment)))
           .end(done);
       });
     });
 
     describe(`Should return "bad request" error with incorrect comment body`, () => {
-      const app = createApi();
-
       const newIncorrectComment = {
         incorrectProperty: `incorrectProperty`,
       };
 
-      test(`Returns 400`, (done) => {
-        request(app).post(`/articles/7uDv8x/comments`).send(newIncorrectComment).expect(HttpCode.BAD_REQUEST).end(done);
+      test(`Returns 400`, async () => {
+        const app = await createApi();
+
+        request(app).post(`/articles/1/comments`).send(newIncorrectComment).expect(HTTP_CODE.BAD_REQUEST);
       });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, (done) => {
-      const app = createApi();
+    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+      const app = await createApi();
 
-      request(app).post(`/articles/randomId/comments`).send({}).expect(HttpCode.NOT_FOUND).end(done);
+      request(app).post(`/articles/9999/comments`).send({}).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 });

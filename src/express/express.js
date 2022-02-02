@@ -7,7 +7,7 @@ const path = require(`path`);
 const { mainRouter, BASE_MAIN_PATH } = require(`./routes/mainRoutes`);
 const { myRouter, BASE_MY_PATH } = require(`./routes/myRoutes`);
 const { articlesRouter, BASE_ARTICLES_PATH } = require(`./routes/articlesRoutes`);
-const { HttpCode } = require(`../constants`);
+const { HTTP_CODE } = require(`../constants`);
 const { PUBLIC_DIR, UPLOAD_DIR, DEFAULT_PORT, TEMPLATES_PATH } = require('./constants');
 
 const app = express();
@@ -23,10 +23,10 @@ app.use(BASE_MY_PATH, myRouter);
 app.use(BASE_ARTICLES_PATH, articlesRouter);
 
 app.use((req, res) => {
-  res.status(HttpCode.NOT_FOUND).render(`404`);
+  res.status(HTTP_CODE.NOT_FOUND).render(`404`);
 });
 app.use((err, req, res, next) => {
-  res.status(HttpCode.INTERNAL_SERVER_ERROR).render(`500`);
+  res.status(HTTP_CODE.INTERNAL_SERVER_ERROR).render(`500`);
   next();
 });
 

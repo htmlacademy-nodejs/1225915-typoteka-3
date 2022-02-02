@@ -22,8 +22,8 @@ CREATE TABLE users (
   lastname VARCHAR (100) NOT NULL,
   avatar VARCHAR (150) UNIQUE,
   email VARCHAR (250) NOT NULL UNIQUE,
-  role INTEGER NOT NULL,
-  FOREIGN KEY (role) REFERENCES roles (id)
+  role_id INTEGER NOT NULL,
+  FOREIGN KEY (role_id) REFERENCES roles (id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
@@ -34,8 +34,11 @@ CREATE TABLE articles (
   announce VARCHAR (100) NOT NULL,
   full_text TEXT NOT NULL,
   created TIMESTAMP DEFAULT current_timestamp,
-  author_id INTEGER NOT NULL,
-  image VARCHAR(150)
+  image VARCHAR(150),
+  author_id INTEGER NOT NULL
+  FOREIGN KEY (author_id) REFERENCES users (id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
 );
 
 CREATE TABLE comments (
