@@ -84,3 +84,6 @@ block main
               | Комментарии
               span.preview__cloud
               b.preview__comment-count #{article.comments.length}
+      if totalPages > 1
+        .preview__toggle-wrapper
+          +pagination(page, totalPages, 2, `?`, `preview__pagination`)

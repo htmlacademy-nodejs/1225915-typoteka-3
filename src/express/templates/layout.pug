@@ -11,7 +11,36 @@ html(lang='ru')
     link(rel='preload', href='/fonts/Inter-Medium.woff2', as='font', crossorigin='anonymous')
     link(rel='preload', href='/fonts/SFProDisplay-Regular.woff2', as='font', crossorigin='anonymous')
     link(rel='stylesheet', href='/css/style.min.css')
+    style.
+      a:not([href]) {
+        cursor: default;
+      }
   body(style=bodyStyle)
+    mixin pagination(page, totalPages, width, prefix, mixClass=null)
+      -
+        let start = page - width;
+        let end = page + width;
+        if (start < 1) {
+          end += 1 - start;
+          start = 1;
+        }
+        if (end > totalPages) {
+          start -= end - totalPages;
+          end = totalPages;
+        }
+        if (start < 1) {
+          start = 1;
+        }
+        let i = start - 1
+      ul.pagination(class=mixClass)
+        li
+          a.pagination__button.button.button--backwards(class={ 'button--disabled': page === 1 }, href=(page > 1 ? `${prefix}page=${page - 1}` : null), aria-label='Страница назад')
+        while i++ < end
+          li.pagination__item(class={ 'pagination__item--active': i === page })
+            a(href=(i === page ? null : `${prefix}page=${i}`))= i
+        li
+          a.pagination__button.button.button--forward(class={ 'button--disabled': page === totalPages }, href=(page < totalPages ? `${prefix}page=${page + 1}` : null), aria-label='Страница вперед')
+
     div(class=bodyClass||`wrapper`)
       header(class=headerClass||`header`)
         a.header__logo.logo(href='/')

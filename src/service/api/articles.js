@@ -13,11 +13,21 @@ const articlesRouter = (apiRouter, articlesService, commentsService) => {
   apiRouter.use(`/articles`, route);
 
   route.get(`/`, async (req, res) => {
-    const { comments } = req.query;
+    const { comments, limit, offset } = req.query;
 
-    const articles = await articlesService.getAll(comments);
+    const handleSuccessResponse = (articles) => {
+      res.status(HTTP_CODE.OK).json(articles);
+    };
 
-    res.status(HTTP_CODE.OK).json(articles);
+    if (limit && offset) {
+      const articles = await articlesService.getByPage({ limit, offset, comments });
+
+      handleSuccessResponse(articles);
+    } else {
+      const articles = await articlesService.getAll(comments);
+
+      handleSuccessResponse(articles);
+    }
   });
 
   route.get('/comments', async (req, res) => {
