@@ -1452,6 +1452,7 @@ summary {
   display: flex;
   -ms-flex-wrap: wrap;
   flex-wrap: wrap;
+  justify-content: center;
 }
 .pagination .button--forward::after {
   margin-left: 0;

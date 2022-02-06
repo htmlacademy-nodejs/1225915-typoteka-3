@@ -11,16 +11,36 @@ class ArticlesService {
     this._Comment = sequelize.models.comment;
   }
 
-  async getAll(needComments) {
+  getIncludeProp(needComments) {
     const include = [this._Category];
 
     if (needComments) {
       include.push(this._Comment);
     }
 
+    return include;
+  }
+
+  async getAll(needComments) {
+    const include = this.getIncludeProp(needComments);
+
     const articles = await this._Article.findAll({ include, order: [DEFAULT_ORDER] });
 
     return articles.map((article) => article.get());
+  }
+
+  async getByPage({ limit, offset, comments }) {
+    const include = this.getIncludeProp(!!comments);
+
+    const { count, rows } = await this._Article.findAndCountAll({
+      order: [DEFAULT_ORDER],
+      distinct: true,
+      include,
+      limit,
+      offset,
+    });
+
+    return { count, articles: rows };
   }
 
   getArticleById(articleId) {

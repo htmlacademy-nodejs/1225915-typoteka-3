@@ -21,9 +21,9 @@ class API {
   }
 
   getArticles(params = {}) {
-    const { comments } = params;
+    const { comments, limit, offset } = params;
 
-    return this._load('/articles', { params: { comments } });
+    return this._load('/articles', { params: { comments, limit, offset } });
   }
 
   getArticleById(id) {
