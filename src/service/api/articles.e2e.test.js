@@ -59,9 +59,6 @@ describe(`articlesRouter`, () => {
     test(`Contains 2 articles`, () => {
       expect(response.body.length).toBe(2);
     });
-    test(`First article has title "Что такое золотое сечение"`, () => {
-      expect(response.body[0].title).toBe(mockArticles[0].title);
-    });
   });
 
   describe(`GET /articles/:articleId`, () => {
@@ -153,9 +150,9 @@ describe(`articlesRouter`, () => {
       let response;
 
       const newArticle = {
-        title: `title`,
+        title: `Как перестать беспокоиться и начать жить. `,
         category: [1],
-        announce: `announce`,
+        announce: `Как достигнуть успеха не вставая с кресла`,
         full_text: `fullText`,
       };
 
@@ -183,24 +180,47 @@ describe(`articlesRouter`, () => {
       });
     });
 
-    describe(`Refuses to create an article if data is invalid`, () => {
+    describe(`Should return BAD_REQUEST if article won't pass schema validation`, () => {
+      const newArticle = {
+        title: `Как перестать беспокоиться и начать жить. `,
+        category: [1],
+        announce: `Как достигнуть успеха не вставая с кресла`,
+        full_text: `fullText`,
+      };
+
       let app;
 
       beforeAll(async () => {
         app = await createApi();
       });
 
-      const newArticle = {
-        title: `title`,
-        category: [1],
-        announce: `announce`,
-      };
+      test('correct handle wrong type of article properties', async () => {
+        const badArticles = [
+          { ...newArticle, title: true },
+          { ...newArticle, announce: [] },
+          { ...newArticle, full_text: {} },
+          { ...newArticle, comments: '' },
+          { ...newArticle, image: [] },
+          { ...newArticle, category: '' },
+        ];
 
-      test(`Without any required property response code is 400`, async () => {
-        for (const key of Object.keys(newArticle)) {
-          const badArticle = { ...newArticle };
-          delete badArticle[key];
+        for (const badArticle of badArticles) {
+          await request(app).post(`/articles`).send(badArticle).expect(HTTP_CODE.BAD_REQUEST);
+        }
+      });
 
+      test('correct handle wrong value of article properties', async () => {
+        const badArticles = [
+          { ...newArticle, title: 'small title' },
+          { ...newArticle, category: [] },
+          {
+            ...newArticle,
+            announce:
+              'too big announce too big announce too big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announce too big announce too big announce too big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announce',
+          },
+        ];
+
+        for (const badArticle of badArticles) {
           await request(app).post(`/articles`).send(badArticle).expect(HTTP_CODE.BAD_REQUEST);
         }
       });
@@ -213,8 +233,8 @@ describe(`articlesRouter`, () => {
       let response;
 
       const newFieldsContent = {
-        title: `title`,
-        announce: 'announce',
+        title: `Как перестать беспокоиться и начать жить. `,
+        announce: `Как достигнуть успеха не вставая с кресла`,
       };
 
       beforeAll(async () => {
@@ -229,20 +249,43 @@ describe(`articlesRouter`, () => {
       test(`Returns changed article`, () => {
         expect(response.body).toBeTruthy();
       });
-      test(`Really change article`, (done) => {
-        request(app)
-          .get(`/articles`)
-          .expect((res) => {
-            expect(res.body[0]).toEqual(expect.objectContaining(newFieldsContent));
-          })
-          .end(done);
-      });
     });
 
-    test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
+    test('correct handle wrong value of article properties', async () => {
+      const newArticle = {
+        title: `Как перестать беспокоиться и начать жить. `,
+        category: [1],
+        announce: `Как достигнуть успеха не вставая с кресла`,
+        full_text: `fullText`,
+      };
+
       const app = await createApi();
 
-      request(app).put(`/articles/randomId`).send({}).expect(HTTP_CODE.NOT_FOUND);
+      const badArticles = [
+        { ...newArticle, title: 'small title' },
+        { ...newArticle, category: [] },
+        {
+          ...newArticle,
+          announce:
+            'too big announce too big announce too big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announce too big announce too big announce too big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announcetoo big announce too big announce',
+        },
+      ];
+
+      for (const badArticle of badArticles) {
+        await request(app).put(`/articles/1`).send(badArticle).expect(HTTP_CODE.BAD_REQUEST);
+      }
+    });
+
+    test(`Should return BAD_REQUEST if article with passed id isn't number`, async () => {
+      const app = await createApi();
+
+      await request(app).put(`/articles/randomId`).send({}).expect(HTTP_CODE.BAD_REQUEST);
+    });
+
+    test(`Should return "not found error" if article with passed id isn't number`, async () => {
+      const app = await createApi();
+
+      await request(app).put(`/articles/98765`).send({}).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 
@@ -286,12 +329,12 @@ describe(`articlesRouter`, () => {
       let app;
       let response;
 
-      const newComment = { text: `text` };
+      const newComment = { text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.` };
 
       beforeAll(async () => {
         app = await createApi();
 
-        response = await request(app).post(`/articles/1/comments`).send(newComment);
+        response = await request(app).post(`/articles/1/comment`).send(newComment);
       });
 
       test(`Returns status code 201`, () => {
@@ -313,14 +356,26 @@ describe(`articlesRouter`, () => {
       test(`Returns 400`, async () => {
         const app = await createApi();
 
-        request(app).post(`/articles/1/comments`).send(newIncorrectComment).expect(HTTP_CODE.BAD_REQUEST);
+        request(app).post(`/articles/1/comment`).send(newIncorrectComment).expect(HTTP_CODE.BAD_REQUEST);
       });
     });
 
     test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
       const app = await createApi();
 
-      request(app).post(`/articles/9999/comments`).send({}).expect(HTTP_CODE.NOT_FOUND);
+      request(app).post(`/articles/9999/comment`).send({}).expect(HTTP_CODE.NOT_FOUND);
+    });
+
+    test(`Should return "bad request" if new comment doesn't contain text property`, async () => {
+      const app = await createApi();
+
+      request(app).post(`/articles/1/comment`).send({}).expect(HTTP_CODE.BAD_REQUEST);
+    });
+
+    test(`Should return "bad request" if new comment text property too small`, async () => {
+      const app = await createApi();
+
+      request(app).post(`/articles/1/comment`).send({ text: 'less then 20' }).expect(HTTP_CODE.BAD_REQUEST);
     });
   });
 });

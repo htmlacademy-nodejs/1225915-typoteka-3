@@ -15,6 +15,14 @@ html(lang='ru')
       a:not([href]) {
         cursor: default;
       }
+    style.
+      .server-error {
+        border-radius: 10px;
+        color: white;
+        background-color: tomato;
+        margin: 20px 0;
+        padding: 10px;
+      }
   body(style=bodyStyle)
     mixin pagination(page, totalPages, width, prefix, mixClass=null)
       -
@@ -40,6 +48,11 @@ html(lang='ru')
             a(href=(i === page ? null : `${prefix}page=${i}`))= i
         li
           a.pagination__button.button.button--forward(class={ 'button--disabled': page === totalPages }, href=(page < totalPages ? `${prefix}page=${page + 1}` : null), aria-label='Страница вперед')
+
+    mixin insertErrorMessage(messages)
+      if messages
+        each message of messages
+          .server-error= message
 
     div(class=bodyClass||`wrapper`)
       header(class=headerClass||`header`)

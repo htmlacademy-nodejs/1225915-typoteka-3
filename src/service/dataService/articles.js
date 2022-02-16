@@ -44,13 +44,14 @@ class ArticlesService {
   }
 
   getArticleById(articleId) {
-    return this._Article.findByPk(articleId, {
+    return this._Article.findByPk(Number(articleId), {
       include: [this._Category, this._Comment],
     });
   }
 
   async createArticle(data) {
     const newArticle = await this._Article.create(data);
+
     newArticle.addCategories(data.category);
     newArticle.setAuthor(1);
 

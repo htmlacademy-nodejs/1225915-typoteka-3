@@ -4,7 +4,6 @@ const formatNewArticle = ({ body, file = {} }) => {
     announce: body.announce,
     full_text: body.text,
     category: (body.categories || []).map((category) => Number(category)),
-    comments: [],
   };
 
   if (file.filename) {

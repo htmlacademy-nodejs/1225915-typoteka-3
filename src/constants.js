@@ -11,6 +11,13 @@ const EXIT_CODE = {
   success: 0,
 };
 
+const HTTP_METHOD = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`,
+};
+
 const HTTP_CODE = {
   OK: 200,
   CREATED: 201,
@@ -26,11 +33,15 @@ const ENV = {
   PRODUCTION: `production`,
 };
 
+const REQUIRED_VALIDATION_MESSAGE = 'Обязательно для заполнения';
+
 module.exports = {
   ENV,
   HTTP_CODE,
+  HTTP_METHOD,
   EXIT_CODE,
   DEFAULT_API_PORT,
   USER_ARGV_INDEX,
   DEFAULT_COMMAND,
+  REQUIRED_VALIDATION_MESSAGE,
 };
