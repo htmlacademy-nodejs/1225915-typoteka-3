@@ -13,6 +13,7 @@ const { PUBLIC_DIR, UPLOAD_DIR, DEFAULT_PORT, TEMPLATES_PATH } = require('./cons
 const app = express();
 const PORT = process.env.FRONTEND_PORT || DEFAULT_PORT;
 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 app.use(express.static(path.resolve(__dirname, UPLOAD_DIR)));
 app.set(`views`, path.resolve(__dirname, TEMPLATES_PATH));

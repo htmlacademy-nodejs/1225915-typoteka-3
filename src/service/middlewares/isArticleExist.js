@@ -10,11 +10,11 @@ const isArticleExist =
     const article = await service.getArticleById(articleId, needComments);
 
     if (!article) {
-      handleNotFound(res, `Article with id ${articleId} not found.`);
+      return handleNotFound(res, `Article with id ${articleId} not found.`);
     }
 
     res.locals.article = article;
-    next();
+    return next();
   };
 
 module.exports = {
