@@ -8,7 +8,8 @@ const initDb = async (sequelize, { categories, articles, users }) => {
   await sequelize.sync({ force: true });
 
   await Category.bulkCreate(categories.map((category) => ({ title: category })));
-  await User.bulkCreate(users, { include: [Role] });
+  // await User.bulkCreate(users, { include: [Role] });
+  await User.bulkCreate(users);
 
   const articlesPromises = articles.map(async (article, articleIndex) => {
     const articleModel = await Article.create({ ...article });

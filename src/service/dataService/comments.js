@@ -1,18 +1,20 @@
 'use strict';
 
 const { DEFAULT_ORDER } = require('./constants');
+const { includeUser } = require('../lib/includeUser');
 
 class CommentsService {
   constructor(sequelize) {
     this._Comment = sequelize.models.comment;
+    this._User = sequelize.models.user;
   }
 
   getComments(limit = 5) {
-    return this._Comment.findAll({ limit, raw: true, order: [DEFAULT_ORDER] });
+    return this._Comment.findAll({ include: includeUser(this._User), limit, raw: true, order: [DEFAULT_ORDER] });
   }
 
   getCommentsById(articleId) {
-    return this._Comment.findAll({ where: { article_id: articleId }, raw: true });
+    return this._Comment.findAll({ where: { article_id: articleId }, include: includeUser(this._User), raw: true });
   }
 
   async addComment(articleId, newCommentData) {

@@ -9,8 +9,6 @@ const { getUsers } = require('../cli/fillDb/getUsers');
 const { initDb } = require('../lib/initDb');
 const { CommentsService } = require('../dataService');
 
-const mockUsers = getUsers();
-
 const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
 
 const mockArticles = [
@@ -22,7 +20,7 @@ const mockArticles = [
     full_text: `Бороться с прокрастинацией несложно. Просто действуйте. Маленькими шагами. Освоить вёрстку несложно.`,
   },
   {
-    comments: [{ text: 'text' }],
+    comments: [{ text: 'text', author_id: 2 }],
     title: `Лучшие рок-музыканты 20-века`,
     category: [1],
     announce: `Освоить вёрстку несложно.`,
@@ -33,6 +31,8 @@ const mockArticles = [
 const mockDB = new Sequelize(`sqlite::memory:`, { logging: false });
 
 const createApi = async () => {
+  const mockUsers = await getUsers();
+
   await initDb(mockDB, { categories: mockCategories, articles: mockArticles, users: mockUsers });
 
   const app = express();
@@ -82,7 +82,7 @@ describe(`articlesRouter`, () => {
     test(`Should return "not found error" if article with passed id doesn't exist`, async () => {
       const app = await createApi();
 
-      request(app).get(`/articles/randomId`).expect(HTTP_CODE.NOT_FOUND);
+      request(app).get(`/articles/9999`).expect(HTTP_CODE.NOT_FOUND);
     });
   });
 

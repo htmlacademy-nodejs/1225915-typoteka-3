@@ -55,6 +55,10 @@ class API {
   editArticle({ articleId, data }) {
     return this._load(`/articles/${articleId}`, { method: HTTP_METHOD.PUT, data });
   }
+
+  createUser(data) {
+    return this._load('/user', { method: HTTP_METHOD.POST, data });
+  }
 }
 
 const defaultAPI = new API(defaultUrl, TIMEOUT);

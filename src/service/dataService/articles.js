@@ -2,20 +2,26 @@
 
 const { where } = require('sequelize');
 const { DEFAULT_ORDER } = require('./constants');
-const requiredArticleFields = [`title`, `category`, `announce`];
+const { includeUser } = require('../lib/includeUser');
 
 class ArticlesService {
   constructor(sequelize) {
     this._Article = sequelize.models.article;
     this._Category = sequelize.models.category;
     this._Comment = sequelize.models.comment;
+    this._User = sequelize.models.user;
   }
 
   getIncludeProp(needComments) {
-    const include = [this._Category];
+    const include = [this._Category, includeUser(this._User)];
 
     if (needComments) {
-      include.push(this._Comment);
+      const includeComment = {
+        model: this._Comment,
+        include: [includeUser(this._User)],
+      };
+
+      include.push(includeComment);
     }
 
     return include;
@@ -45,7 +51,7 @@ class ArticlesService {
 
   getArticleById(articleId) {
     return this._Article.findByPk(Number(articleId), {
-      include: [this._Category, this._Comment],
+      include: this.getIncludeProp(true),
     });
   }
 
@@ -77,5 +83,4 @@ class ArticlesService {
 
 module.exports = {
   ArticlesService,
-  requiredArticleFields,
 };

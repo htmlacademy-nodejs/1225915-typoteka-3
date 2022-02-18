@@ -8,8 +8,6 @@ const { HTTP_CODE } = require(`../../constants`);
 const { getUsers } = require('../cli/fillDb/getUsers');
 const { initDb } = require('../lib/initDb');
 
-const mockUsers = getUsers();
-
 const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
 
 const mockArticles = [
@@ -36,7 +34,9 @@ app.use(express.json());
 
 describe(`searchRouter`, () => {
   beforeAll(async () => {
-    await initDb(mockDB, { categories: mockCategories, articles: mockArticles, users: mockUsers });
+    const users = await getUsers();
+
+    await initDb(mockDB, { categories: mockCategories, articles: mockArticles, users });
     searchRouter(app, new SearchService(mockDB));
   });
 
