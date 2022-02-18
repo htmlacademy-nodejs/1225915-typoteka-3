@@ -41,7 +41,7 @@ const run = async (args) => {
     readContent(FILE_COMMENTS_PATH),
   ]);
 
-  const users = getUsers();
+  const users = await getUsers();
 
   const articles = generatePublications({ count: publicationsCount, categories, comments, sentences, titles, users });
 

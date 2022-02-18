@@ -8,8 +8,6 @@ const { CategoriesService } = require(`../dataService/categories`);
 const { getUsers } = require('../cli/fillDb/getUsers');
 const { HTTP_CODE } = require(`../../constants`);
 
-const mockUsers = getUsers();
-
 const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
 
 const mockArticles = [
@@ -36,7 +34,9 @@ app.use(express.json());
 
 describe(`categoriesRouter`, () => {
   beforeAll(async () => {
-    await initDb(mockDB, { categories: mockCategories, articles: mockArticles, users: mockUsers });
+    const users = await getUsers();
+
+    await initDb(mockDB, { categories: mockCategories, articles: mockArticles, users });
     categoriesRouter(app, new CategoriesService(mockDB));
   });
 

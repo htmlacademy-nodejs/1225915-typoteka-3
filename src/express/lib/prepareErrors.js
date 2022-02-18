@@ -1,5 +1,5 @@
 const prepareErrors = (errors) => {
-  return errors.response.data;
+  return Array(errors.response.data);
 };
 
 module.exports = {

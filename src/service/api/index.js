@@ -3,10 +3,11 @@
 const { Router } = require(`express`);
 const { sequelize } = require('../lib/sequelize');
 
-const { ArticlesService, CategoriesService, SearchService, CommentsService } = require(`../dataService`);
+const { ArticlesService, CategoriesService, SearchService, CommentsService, UserService } = require(`../dataService`);
 const { articlesRouter } = require(`./articles`);
 const { categoriesRouter } = require(`./categories`);
 const { searchRouter } = require(`./search`);
+const { userRouter } = require(`./user`);
 const { getLogger } = require(`../lib/logger`);
 const { defineModels } = require('../models');
 
@@ -23,6 +24,7 @@ const getApiRouter = async () => {
     articlesRouter(apiRouter, new ArticlesService(sequelize), new CommentsService(sequelize));
     categoriesRouter(apiRouter, new CategoriesService(sequelize));
     searchRouter(apiRouter, new SearchService(sequelize));
+    userRouter(apiRouter, new UserService(sequelize));
   } catch (err) {
     logger.error(`/api/index error: ${err.message}`);
   }
