@@ -10,7 +10,7 @@ class CommentsService {
   }
 
   getComments(limit = 5) {
-    return this._Comment.findAll({ include: includeUser(this._User), limit, raw: true, order: [DEFAULT_ORDER] });
+    return this._Comment.findAll({ include: includeUser(this._User), limit, order: [DEFAULT_ORDER] });
   }
 
   getCommentsById(articleId) {
@@ -18,8 +18,11 @@ class CommentsService {
   }
 
   async addComment(articleId, newCommentData) {
-    const newComment = await this._Comment.create({ ...newCommentData, article_id: Number(articleId) });
+    const { userId, ...commentData } = newCommentData;
+
+    const newComment = await this._Comment.create({ ...commentData, article_id: Number(articleId) });
     newComment.setArticle(Number(articleId));
+    newComment.setAuthor(Number(userId));
 
     return newComment;
   }

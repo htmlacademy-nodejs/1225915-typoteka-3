@@ -1,12 +1,12 @@
 'use strict';
 
 const { Router } = require(`express`);
-const { HTTP_CODE } = require(`../../constants`);
-const { handleNotFound } = require(`../lib/handleNotFound`);
-const { isArticleExist } = require(`../middlewares/isArticleExist`);
-const { validateNewComment } = require(`../middlewares/validateNewComment/validateNewComment`);
-const { validateArticle } = require('../middlewares/validateNewArticle/validateArticle');
-const { validateRouteParams } = require('../middlewares/validateRouteParams/validateRouteParams');
+const { HTTP_CODE } = require(`../../../constants`);
+const { handleNotFound } = require(`../../lib/handleNotFound`);
+const { isArticleExist } = require(`../../middlewares/isArticleExist`);
+const { validateNewComment } = require(`../../middlewares/validateNewComment/validateNewComment`);
+const { validateArticle } = require('../../middlewares/validateNewArticle/validateArticle');
+const { validateRouteParams } = require('../../middlewares/validateRouteParams/validateRouteParams');
 
 const articlesRouter = (apiRouter, articlesService, commentsService) => {
   const route = new Router();
@@ -77,7 +77,7 @@ const articlesRouter = (apiRouter, articlesService, commentsService) => {
   route.post(`/`, validateArticle(), async (req, res) => {
     const newArticle = req.body;
 
-    const createdArticle = await articlesService.createArticle({ ...newArticle });
+    const createdArticle = await articlesService.createArticle(newArticle);
 
     res.status(HTTP_CODE.CREATED).json(createdArticle);
   });

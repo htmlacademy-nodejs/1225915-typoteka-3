@@ -48,7 +48,8 @@ block main
                 .form__field.form__field--publication-text
                   label
                     textarea(name=`text` rows=`5` placeholder=`Полный текст публикации`) #{post.text}
-              +insertErrorMessage(validationMessages)
+              input(type="hidden" name="_csrf" value=csrfToken)
+            +insertErrorMessage(validationMessages)
 
 block scripts
   script(src='/js/vandor.js')

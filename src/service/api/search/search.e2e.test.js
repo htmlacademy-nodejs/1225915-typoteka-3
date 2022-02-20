@@ -3,10 +3,10 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const { searchRouter } = require(`./search`);
-const { SearchService } = require(`../dataService/search`);
-const { HTTP_CODE } = require(`../../constants`);
-const { getUsers } = require('../cli/fillDb/getUsers');
-const { initDb } = require('../lib/initDb');
+const { SearchService } = require(`../../dataService/search`);
+const { HTTP_CODE } = require(`../../../constants`);
+const { getUsers } = require('../../cli/fillDb/getUsers');
+const { initDb } = require('../../lib/initDb');
 
 const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
 

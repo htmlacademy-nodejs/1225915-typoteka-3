@@ -48,8 +48,8 @@ class API {
     return this._load('/articles', { method: HTTP_METHOD.POST, data });
   }
 
-  createComment({ articleId, data }) {
-    return this._load(`/articles/${articleId}/comment`, { method: HTTP_METHOD.POST, data });
+  createComment({ articleId, data, userId }) {
+    return this._load(`/articles/${articleId}/comment`, { method: HTTP_METHOD.POST, data: { ...data, userId } });
   }
 
   editArticle({ articleId, data }) {
@@ -58,6 +58,10 @@ class API {
 
   createUser(data) {
     return this._load('/user', { method: HTTP_METHOD.POST, data });
+  }
+
+  auth({ email, password }) {
+    return this._load('/user/auth', { method: HTTP_METHOD.POST, data: { email, password } });
   }
 }
 

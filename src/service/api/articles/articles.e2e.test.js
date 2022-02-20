@@ -3,11 +3,11 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const { articlesRouter } = require(`./articles`);
-const { ArticlesService } = require(`../dataService/articles`);
-const { HTTP_CODE } = require(`../../constants`);
-const { getUsers } = require('../cli/fillDb/getUsers');
-const { initDb } = require('../lib/initDb');
-const { CommentsService } = require('../dataService');
+const { ArticlesService } = require(`../../dataService/articles`);
+const { HTTP_CODE } = require(`../../../constants`);
+const { getUsers } = require('../../cli/fillDb/getUsers');
+const { initDb } = require('../../lib/initDb');
+const { CommentsService } = require('../../dataService');
 
 const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
 
@@ -154,6 +154,7 @@ describe(`articlesRouter`, () => {
         category: [1],
         announce: `Как достигнуть успеха не вставая с кресла`,
         full_text: `fullText`,
+        userId: 1,
       };
 
       beforeAll(async () => {
@@ -166,7 +167,7 @@ describe(`articlesRouter`, () => {
         expect(response.statusCode).toBe(HTTP_CODE.CREATED);
       });
       test(`Returns created article`, () => {
-        const { category, ...rest } = newArticle;
+        const { category, userId, ...rest } = newArticle;
 
         const createdArticleProperties = { ...rest };
 
@@ -329,7 +330,10 @@ describe(`articlesRouter`, () => {
       let app;
       let response;
 
-      const newComment = { text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.` };
+      const newComment = {
+        text: `Давно не пользуюсь стационарными компьютерами. Ноутбуки победили.`,
+        userId: 1,
+      };
 
       beforeAll(async () => {
         app = await createApi();
@@ -343,7 +347,7 @@ describe(`articlesRouter`, () => {
       test(`Really add new comment`, (done) => {
         request(app)
           .get(`/articles/1/comments`)
-          .expect((res) => expect(res.body[0]).toEqual(expect.objectContaining(newComment)))
+          .expect((res) => expect(res.body[0]).toEqual(expect.objectContaining({ text: newComment.text })))
           .end(done);
       });
     });

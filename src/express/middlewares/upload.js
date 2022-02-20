@@ -8,11 +8,7 @@ const FILE_TYPES = [`image/png`, `image/jpg`, `image/jpeg`];
 const uploadDirAbsolute = path.resolve(__dirname, IMAGES_DIR);
 
 const fileFilter = (req, file, cb) => {
-  if (FILE_TYPES.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
+  cb(null, FILE_TYPES.includes(file.mimetype));
 };
 
 const upload = multer({

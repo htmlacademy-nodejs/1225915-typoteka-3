@@ -2,11 +2,11 @@ const express = require(`express`);
 const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
-const { initDb } = require('../lib/initDb');
+const { initDb } = require('../../lib/initDb');
 const { categoriesRouter } = require(`./categories`);
-const { CategoriesService } = require(`../dataService/categories`);
-const { getUsers } = require('../cli/fillDb/getUsers');
-const { HTTP_CODE } = require(`../../constants`);
+const { CategoriesService } = require(`../../dataService/categories`);
+const { getUsers } = require('../../cli/fillDb/getUsers');
+const { HTTP_CODE } = require(`../../../constants`);
 
 const mockCategories = ['Семья', 'Работа', 'Уход за собой'];
 

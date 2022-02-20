@@ -14,6 +14,7 @@ const api = getAPI();
 mainRouter.get(`/`, async (req, res) => {
   let { page = 1 } = req.query;
   const offset = (page - 1) * ARTICLES_PER_PAGE;
+  const { user } = req.session;
 
   const [{ count, articles }, categories] = await Promise.all([
     api.getArticles({ comments: true, limit: ARTICLES_PER_PAGE, offset }),
@@ -22,30 +23,31 @@ mainRouter.get(`/`, async (req, res) => {
 
   const totalPages = Math.ceil(count / ARTICLES_PER_PAGE);
 
-  res.render(`main`, { articles, categories, page: Number(page), totalPages });
+  res.render(`main`, { articles, categories, page: Number(page), totalPages, user });
 });
 
 mainRouter.get(`/register`, (req, res) => {
-  res.render(`sign-up`, { payload: {} });
+  const { user } = req.session;
+
+  res.render(`sign-up`, { payload: {}, user });
 });
 
 mainRouter.get(`/login`, (req, res) => {
-  res.render(`login`);
+  const { user } = req.session;
+
+  res.render(`login`, { validationMessages: [], payload: {}, user });
 });
 
 mainRouter.get(`/search`, async (req, res) => {
   const { query } = req.query;
+  const { user } = req.session;
 
   try {
     const articles = await api.search(query);
-    res.render(`search`, { articles, query });
+    res.render(`search`, { articles, query, user });
   } catch (e) {
-    res.render(`search`, { articles: [], query });
+    res.render(`search`, { articles: [], query, user });
   }
-});
-
-mainRouter.get(`/categories`, (req, res) => {
-  res.render(`all-categories`);
 });
 
 mainRouter.post('/register', upload.single(`avatar`), async (req, res) => {
@@ -71,6 +73,30 @@ mainRouter.post('/register', upload.single(`avatar`), async (req, res) => {
 
     res.render(`sign-up`, { validationMessages, payload });
   }
+});
+
+mainRouter.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await api.auth({ email, password });
+
+    req.session.user = user;
+    req.session.save(() => {
+      console.log('req.session', req.session);
+      res.redirect(`/`);
+    });
+  } catch (errors) {
+    const validationMessages = prepareErrors(errors);
+
+    res.render('login', { validationMessages, payload: { email, password } });
+  }
+});
+
+mainRouter.get(`/logout`, (req, res) => {
+  delete req.session.user;
+
+  res.redirect(`/`);
 });
 
 module.exports = { mainRouter, BASE_MAIN_PATH };

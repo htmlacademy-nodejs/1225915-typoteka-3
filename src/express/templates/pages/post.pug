@@ -9,14 +9,13 @@ block main
         .post__wrapper
           .post__head
             a.post__backwards.button.button--backwards(href='#!') Назад
-            time.post__date(datetime=`${article.created_at}`) #{article.created_at}
+            time.post__date(datetime=`${article.createdAt}`) #{article.createdAt}
             h2.post__title.title.title--main #{article.title}
             ul.post__themes.themes
               each category of article.categories
                 li.themes__item
-                  a.themes__item-link(href='#!')
+                  a.themes__item-link(href=`/category/${category.id}`)
                     | #{category.title}
-                    sup 88
                   button.themes__remove-btn(type='button') Удалить категорию
           .post__picture
             img(src=`/img/${article.image}`, alt=article.title)
@@ -30,22 +29,31 @@ block main
               each comment of article.comments
                 li.comments__comment
                   .comments__avatar.avatar
-                    img(src='/img/avatar-1.png', alt='аватар пользователя')
+                    img(src=`/img/${comment.author.avatar}`, alt='аватар пользователя')
                   .comments__text
                     .comments__head
-                      p Евгений Петров •
-                      time.comments__date(datetime='2019-03-21T20:33') 21.03.2019, 20:33
+                      p #{comment.author.name} •
+                      time.comments__date(datetime=comment.createdAt) #{comment.formattedCreatedAt}
                     p.comments__message #{comment.text}
           else
             h2.comments__title.title.title--middle Комментарии отсутствуют
-          .comments__footer.comments__footer--user
-            form(action=`/articles/${article.id}/comment`, method='POST')
-              .comments__avatar.avatar
-                img(src='/img/avatar-2.png', alt='аватар пользователя')
-              label
-                textarea(rows='1', placeholder='Присоединиться к обсуждению', name='text') #{text || ''}
-              +insertErrorMessage(validationMessages)
-              button.comments__button.button.button--colored(type='submit') Опубликовать
+
+          if user
+            .comments__footer.comments__footer--user
+              form(action=`/articles/${article.id}/comment`, method='POST')
+                .comments__avatar.avatar
+                  img(src=`/img/${user.avatar}`, alt='аватар пользователя')
+                label
+                  textarea(rows='1', placeholder='Присоединиться к обсуждению', name='text') #{text || ''}
+                input(type="hidden" name="_csrf" value=csrfToken)
+                +insertErrorMessage(validationMessages)
+                button.comments__button.button.button--colored(type='submit') Опубликовать
+          else
+            .comments__footer.comments__footer--visitor
+              a.comments__button.button.button--colored(href=`/login`) Войти
+              .comments__registration
+                p.text.text--signature
+                  b.title.title--small Чтобы присоединиться к переписке необходимо авторизироваться
 
 block scripts
   script(src='/js/main.js')
