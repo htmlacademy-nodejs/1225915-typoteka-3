@@ -4,10 +4,10 @@ const { Router } = require(`express`);
 const { sequelize } = require('../lib/sequelize');
 
 const { ArticlesService, CategoriesService, SearchService, CommentsService, UserService } = require(`../dataService`);
-const { articlesRouter } = require(`./articles`);
-const { categoriesRouter } = require(`./categories`);
-const { searchRouter } = require(`./search`);
-const { userRouter } = require(`./user`);
+const { articlesRouter } = require(`./articles/articles`);
+const { categoriesRouter } = require(`./categories/categories`);
+const { searchRouter } = require(`./search/search`);
+const { userRouter } = require(`./user/user`);
 const { getLogger } = require(`../lib/logger`);
 const { defineModels } = require('../models');
 

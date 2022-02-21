@@ -56,10 +56,11 @@ class ArticlesService {
   }
 
   async createArticle(data) {
-    const newArticle = await this._Article.create(data);
+    const { userId, ...articleData } = data;
+    const newArticle = await this._Article.create(articleData);
 
     newArticle.addCategories(data.category);
-    newArticle.setAuthor(1);
+    newArticle.setAuthor(userId);
 
     return newArticle.get();
   }

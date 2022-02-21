@@ -59,10 +59,11 @@ html(lang='ru')
         a.header__logo.logo(href='/')
           img.logo__image(src='/img/icons/logo-image-only.svg', alt='логотип Тайпотеки')
           span.logo__name Типотека
-        if role === 'author'
-          include partials/nav-author
-        else if role === 'reader'
-          include partials/nav-reader
+        if user
+          if user.id === 1
+            include partials/nav-author
+          else
+            include partials/nav-reader
         else
           include partials/nav-guest
         a.header__search.button.button--search(href='/search', aria-label='поиск по сайту')

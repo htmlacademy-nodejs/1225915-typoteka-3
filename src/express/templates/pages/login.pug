@@ -14,37 +14,36 @@ block main
           li.popup__tab.popup__tab--log-in
             button.popup__tab-switcher.button(type='button') Войти
         .popup__form.popup__form--active.form.form--register
-          form(action='#', method='get')
+          form(action='/register', method='POST', enctype=`multipart/form-data`, autocomplete=`off`)
             .form__field
               label
-                input(type='email', placeholder='Электронная почта', required='')
+                input(type='email', placeholder='Электронная почта', value=payload.email, required='', name='email')
             .form__field
               label
-                input(type='text', placeholder='Имя', required='')
+                input(type='text', placeholder='Имя пользователя', value=payload.name, required='', name='name')
             .form__field
               label
-                input(type='text', placeholder='Фамилия')
+                input(type='password', placeholder='Пароль', required='', name='password')
             .form__field
               label
-                input(type='password', placeholder='Пароль', required='')
-            .form__field
-              label
-                input(type='password', placeholder='Повтор пароля', required='')
+                input(type='password', placeholder='Повтор пароля', required='', name='passwordRepeated')
             .form__image-loader
               a.form__avatar.avatar
                 img(src='/img/icons/smile.svg', alt='аватар пользователя')
               label
-                input.visually-hidden(type='file')
+                input.visually-hidden(type='file', name="avatar")
                 | Загрузить фото профиля
+            +insertErrorMessage(validationMessages)
             button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться
         .popup__form.popup__form--hidden.form.form--log-in
-          form(action='#', method='get')
+          form(action='/login', method='POST')
             .form__field
               label
-                input(type='email', placeholder='Электронная почта', required='')
+                input(type='email', placeholder='Электронная почта', required='' name='email' value=payload.email)
             .form__field
               label
-                input(type='password', placeholder='Пароль', required='')
+                input(type='password', placeholder='Пароль', required='' name='password' value=payload.password)
+            +insertErrorMessage(validationMessages)
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
       .modal__overlay
 

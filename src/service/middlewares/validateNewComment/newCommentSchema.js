@@ -13,6 +13,7 @@ const newCommentSchema = Joi.object({
     'any.required': REQUIRED_VALIDATION_MESSAGE,
     'string.min': SMALL_COMMENT_VALIDATION_MESSAGE,
   }),
+  userId: Joi.number().required(),
 });
 
 module.exports = {

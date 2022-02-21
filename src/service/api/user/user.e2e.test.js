@@ -3,10 +3,10 @@ const request = require(`supertest`);
 const Sequelize = require(`sequelize`);
 
 const { userRouter } = require(`./user`);
-const { UserService } = require(`../dataService/user`);
-const { HTTP_CODE } = require(`../../constants`);
-const { getUsers } = require('../cli/fillDb/getUsers');
-const { initDb } = require('../lib/initDb');
+const { UserService } = require(`../../dataService/user`);
+const { HTTP_CODE } = require(`../../../constants`);
+const { getUsers } = require('../../cli/fillDb/getUsers');
+const { initDb } = require('../../lib/initDb');
 
 const mockDB = new Sequelize(`sqlite::memory:`, { logging: false });
 
@@ -48,7 +48,7 @@ describe('userRouter', () => {
       expect(response.body).toEqual(expect.objectContaining(dataToComparison)));
   });
 
-  describe('should refuses if data is invalid', () => {
+  describe('should refuses creating if data is invalid', () => {
     const validUserData = {
       name: `sidorov`,
       email: `sidorov@example.com`,
@@ -105,6 +105,50 @@ describe('userRouter', () => {
       const badUserData = { ...validUserData, email: `ivanov@example.com` };
 
       await request(app).post(`/user`).send(badUserData).expect(HTTP_CODE.BAD_REQUEST);
+    });
+  });
+
+  describe('should authorize user', () => {
+    const userCredentials = {
+      email: 'ivanov@example.com',
+      password: 'ivanov',
+    };
+
+    let response;
+
+    beforeAll(async () => {
+      const app = await createApi();
+
+      response = await request(app).post('/user/auth').send(userCredentials);
+    });
+
+    test('status code 200', () => expect(response.statusCode).toBe(HTTP_CODE.OK));
+    test('body should contains correct email', () => expect(response.body.email).toBe(userCredentials.email));
+  });
+
+  describe(`shouldn't authorize user`, () => {
+    let app;
+
+    beforeAll(async () => {
+      app = await createApi();
+    });
+
+    test(`if user doesn't exist`, async () => {
+      const userCredentials = {
+        email: 'random@example.com',
+        password: 'random',
+      };
+
+      await request(app).post('/user/auth').send(userCredentials).expect(HTTP_CODE.UNAUTHORIZED);
+    });
+
+    test(`if user passed wrong password`, async () => {
+      const userCredentials = {
+        email: 'ivanov@example.com',
+        password: 'wrongPass',
+      };
+
+      await request(app).post('/user/auth').send(userCredentials).expect(HTTP_CODE.UNAUTHORIZED);
     });
   });
 });

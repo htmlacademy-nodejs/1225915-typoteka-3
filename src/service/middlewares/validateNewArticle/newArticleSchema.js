@@ -9,6 +9,7 @@ const articleSchema = {
   image: Joi.string(),
   category: Joi.array().items(Joi.number().integer().positive()).min(1).required(),
   comments: Joi.array(),
+  userId: Joi.number().required(),
 };
 
 const newArticleSchema = Joi.object({ ...articleSchema });
